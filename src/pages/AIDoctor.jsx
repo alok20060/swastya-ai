@@ -31,6 +31,9 @@ export default function AIDoctor() {
         console.error("Speech recognition error", e);
         setIsListening(false);
       };
+      recognition.onend = () => {
+        setIsListening(false);
+      };
     }
   }, []);
 
@@ -81,18 +84,27 @@ export default function AIDoctor() {
     draw();
   };
 
-  const startListening = () => {
+  const handleToggleListening = () => {
+    if (!recognition) {
+      alert("Your device or browser does not fully support the Web Speech API (Try Chrome or Edge).");
+      return;
+    }
+
+    if (isListening) {
+      try { recognition.stop(); } catch(e) {}
+      setIsListening(false);
+      return;
+    }
+
     try {
-      if (recognition) {
-        recognition.start();
-        setIsListening(true);
-      } else {
-        alert("Your device or browser does not fully support the Web Speech API (Try Chrome or Edge).");
-      }
+      recognition.start();
+      setIsListening(true);
+      setTranscript("");
     } catch (err) {
       console.error("Speech Recognition Error:", err);
-      // Commonly throws if recognition is already started but UI state got out of sync
-      setIsListening(true);
+      if (err.name === 'InvalidStateError') {
+        setIsListening(true); // Sync State
+      }
     }
   };
 
@@ -167,10 +179,10 @@ export default function AIDoctor() {
           
           <button 
             className={`${styles.micBtn} ${isListening ? styles.listening : ''}`} 
-            onClick={startListening}
+            onClick={handleToggleListening}
             disabled={!cameraActive || isSpeaking}
           >
-            {isListening ? "Listening..." : "🎤 Speak"}
+            {isListening ? "Listening... (Tap to stop)" : "🎤 Speak"}
           </button>
           
           {isSpeaking && <div className={styles.speakingIndicator}>Audio playing...</div>}
