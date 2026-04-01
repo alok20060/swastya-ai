@@ -4,9 +4,10 @@ import styles from './Layout.module.css'
 
 const navItems = [
   { to: '/', icon: '🏠', label: 'Home' },
-  { to: '/chat', icon: '💬', label: 'Chat' },
-  { to: '/connect', icon: '🤝', label: 'Connect' },
+  { to: '/health', icon: '❤️', label: 'Health' },
+  { to: '/reminders', icon: '📅', label: 'Tasks' },
   { to: '/aidoctor', icon: '🧑‍⚕️', label: 'Doctor' },
+  { to: '/connect', icon: '🤝', label: 'Connect' },
 ]
 
 export default function Layout() {
