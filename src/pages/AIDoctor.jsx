@@ -46,6 +46,7 @@ export default function AIDoctor() {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        try { await videoRef.current.play(); } catch(e) {}
         setCameraActive(true);
         drawOpenCVMock();
       }
@@ -136,10 +137,10 @@ export default function AIDoctor() {
       <div className={styles.doctorContainer}>
         <div className={styles.visuals}>
           <div className={styles.videoWrapper}>
-            <video ref={videoRef} autoPlay playsInline muted className={styles.videoElement} style={{ display: cameraActive ? 'block' : 'none' }}></video>
-            <canvas ref={canvasRef} width="300" height="300" className={styles.canvasOverlay}></canvas>
+            <video ref={videoRef} autoPlay playsInline muted className={styles.videoElement} style={{ opacity: cameraActive ? 1 : 0, position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' }}></video>
+            <canvas ref={canvasRef} width="300" height="300" className={styles.canvasOverlay} style={{ display: cameraActive ? 'block' : 'none' }}></canvas>
             {!cameraActive && (
-              <div className={styles.cameraPlaceholder}>
+              <div className={styles.cameraPlaceholder} style={{ zIndex: 2 }}>
                 <span style={{ fontSize: '3rem' }}>📷</span>
                 <p>Camera Off</p>
               </div>
