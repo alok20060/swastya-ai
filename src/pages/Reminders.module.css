@@ -1,0 +1,239 @@
+.page {
+  padding: 20px 16px 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.addBtn {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 6px 16px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  min-height: auto;
+}
+
+/* Progress */
+.progressCard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.progressRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.progressLabel {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.progressVal {
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.barWrap {
+  height: 6px;
+  background: var(--surface);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.barFill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.progressDesc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Forms */
+.form {
+  background: var(--card);
+  border: 1px dashed var(--primary);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+.field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.saveBtn {
+  background: var(--primary);
+  color: white;
+  border-radius: var(--radius-sm);
+  margin-top: 8px;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+
+.tab {
+  background: none;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  min-height: auto;
+  padding: 4px 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+}
+
+.tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+/* List */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.empty {
+  text-align: center;
+  padding: 30px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: opacity 0.3s;
+}
+
+.card.done {
+  opacity: 0.6;
+}
+
+.icon {
+  width: 44px; height: 44px;
+  background: var(--surface);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.name {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.card.done .name {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+}
+
+.time {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.caretakerBadge {
+  align-self: flex-start;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  background: rgba(45, 55, 72, 0.6);
+  border-radius: 8px;
+  color: var(--text-secondary);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toggleBtn {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-radius: var(--radius-sm);
+  min-height: 36px;
+  padding: 0 16px;
+  font-size: 0.85rem;
+}
+
+.toggleBtn.btnDone {
+  background: var(--safe-soft);
+  color: var(--safe);
+  padding: 0;
+  width: 36px;
+}
+
+.delBtn {
+  background: none;
+  min-height: auto;
+  padding: 4px;
+  color: var(--text-muted);
+}
+.delBtn:hover {
+  color: var(--critical);
+}

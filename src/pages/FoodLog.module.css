@@ -1,0 +1,281 @@
+.page {
+  padding: 24px 20px 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.addBtn {
+  background: var(--safe-soft);
+  color: var(--safe);
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 6px 16px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  min-height: auto;
+}
+
+/* Balance Ring Card */
+.balanceCard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.balHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.ringWrap {
+  width: 160px;
+  height: 160px;
+  position: relative;
+}
+
+.ringCenter {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.ringNum {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.ringLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.ringWrap svg {
+  transform: rotate(-90deg);
+  width: 100%; height: 100%;
+}
+
+.balFooter {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+}
+
+.balStat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.statIcon {
+  font-size: 1.4rem;
+  background: var(--surface);
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.statVal {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.balDivider {
+  width: 1px;
+  height: 32px;
+  background: var(--border);
+}
+
+/* Forms */
+.form {
+  background: var(--card);
+  border: 1px dashed var(--safe);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label, .sizeGroup > label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.sizeGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sizeBtns {
+  display: flex;
+  gap: 8px;
+}
+
+.szBtn {
+  flex: 1;
+  background: var(--surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 0;
+  font-size: 0.8rem;
+}
+
+.szActive {
+  background: var(--safe-soft);
+  color: var(--safe);
+  border-color: var(--safe);
+}
+
+.saveBtn {
+  background: var(--safe);
+  color: white;
+  border-radius: var(--radius-sm);
+  margin-top: 8px;
+}
+
+/* Log Section */
+.logSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.empty {
+  text-align: center;
+  padding: 30px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.logCard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logIcon {
+  width: 44px; height: 44px;
+  background: var(--surface);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.logInfo {
+  flex: 1;
+}
+
+.logName {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.logMeta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.logCal {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.calVal {
+  color: var(--safe);
+  font-weight: 800;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.calLabel {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.delBtn {
+  background: none;
+  min-height: auto;
+  padding: 8px;
+  margin-right: -8px;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+}
+.delBtn:hover {
+  color: var(--critical);
+}

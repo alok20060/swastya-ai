@@ -1,0 +1,158 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.glow {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 36px 28px;
+  box-shadow: var(--shadow-lg);
+  animation: fadeUp 0.4s ease forwards;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.logoText {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logoBadge {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 4px;
+  padding: 1px 5px;
+  letter-spacing: 1px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.field input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.field input:focus {
+  border-color: var(--accent);
+}
+
+.field input::placeholder {
+  color: var(--muted);
+}
+
+.error {
+  font-size: 12px;
+  color: var(--warn);
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.btn {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #FFF;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 14px;
+  padding: 14px;
+  transition: opacity 0.2s, transform 0.1s;
+  margin-top: 4px;
+}
+
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.switch {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 20px;
+}
+
+.switch a {
+  color: var(--accent);
+  font-weight: 600;
+}
