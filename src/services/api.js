@@ -138,18 +138,20 @@ export const authAPI = {
       // OTP Verification flow
       if (data.otp === '123456') {
         // Fallback Mock OTP Verification -> create/login a pseudo-email in Supabase
-        const proxyEmail = `phone_${data.phone.replace(/\D/g, '')}@swastya.ai`;
+        const cleanPhone = data.phone.replace(/\D/g, '');
+        const proxyEmail = `phone${cleanPhone}@swastya.ai`;
         const proxyPass = 'SecurePhoneMock123!';
+        
         let { data: authData, error } = await supabase.auth.signInWithPassword({ email: proxyEmail, password: proxyPass });
         
-        if (error && error.message.includes('Invalid login credentials')) {
+        if (error && (error.message.includes('Invalid login') || error.status === 400)) {
           const { data: regData, error: regErr } = await supabase.auth.signUp({
             email: proxyEmail, password: proxyPass, options: { data: { name: 'Phone User', phone: data.phone, onboardingComplete: false } }
           });
-          if (regErr) throw new Error(regErr.message);
+          if (regErr) throw new Error("Auto-registration failed: " + regErr.message);
           authData = regData;
         } else if (error) {
-          throw new Error(error.message);
+          throw new Error("Phone auth fallback error: " + error.message);
         }
         session = authData.session;
         user = authData.user;

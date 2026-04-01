@@ -36,6 +36,10 @@ export default function AIDoctor() {
 
   const startCamera = async () => {
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Your browser does not support live video, or the page is not served over HTTPS.");
+        return;
+      }
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -43,7 +47,14 @@ export default function AIDoctor() {
         drawOpenCVMock();
       }
     } catch (err) {
-      alert("Camera/Mic permissions required for live AI Doctor session.");
+      console.error("Camera error:", err);
+      if (err.name === 'NotAllowedError') {
+        alert("Permission denied! Please click the lock icon in your browser URL bar and allow Camera and Microphone access.");
+      } else if (err.name === 'NotFoundError') {
+        alert("No camera or microphone was found on this device.");
+      } else {
+        alert("Failed to start camera: " + err.message);
+      }
     }
   };
 
@@ -71,11 +82,17 @@ export default function AIDoctor() {
   };
 
   const startListening = () => {
-    if (recognition) {
-      recognition.start();
+    try {
+      if (recognition) {
+        recognition.start();
+        setIsListening(true);
+      } else {
+        alert("Your device or browser does not fully support the Web Speech API (Try Chrome or Edge).");
+      }
+    } catch (err) {
+      console.error("Speech Recognition Error:", err);
+      // Commonly throws if recognition is already started but UI state got out of sync
       setIsListening(true);
-    } else {
-      alert("Speech Recognition not supported in this browser.");
     }
   };
 
