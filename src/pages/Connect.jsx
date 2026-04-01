@@ -1,5 +1,5 @@
 // src/pages/Connect.jsx
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './Connect.module.css';
 
 /* ─── Mock Data ────────────────────────────────────────── */
@@ -53,6 +53,10 @@ export default function Connect() {
   const [newPost, setNewPost] = useState({ title: '', body: '', condition: 'diabetes' });
   const [friendSearch, setFriendSearch] = useState('');
 
+  // --- Video Call State ---
+  const localVideoRef = useRef(null);
+  const [localStream, setLocalStream] = useState(null);
+
   /* helpers */
   const conditionLabel = id => CONDITIONS.find(c => c.id === id)?.label || id;
   const conditionIcon = id => CONDITIONS.find(c => c.id === id)?.icon || '🏥';
@@ -79,6 +83,33 @@ export default function Connect() {
     setChatLogs(prev => ({ ...prev, [chatUser.id]: [...(prev[chatUser.id] || []), log] }));
     setChatMsg('');
   };
+
+  const startVideoCall = async (user) => {
+    setCallUser(user);
+    if (chatUser) setChatUser(null);
+    if (selectedUser) setSelectedUser(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      setLocalStream(stream);
+    } catch (err) {
+      console.error("Camera access denied:", err);
+      alert("Please allow camera and microphone permissions to start a video call.");
+    }
+  };
+
+  const endVideoCall = () => {
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+      setLocalStream(null);
+    }
+    setCallUser(null);
+  };
+
+  useEffect(() => {
+    if (localVideoRef.current && localStream) {
+      localVideoRef.current.srcObject = localStream;
+    }
+  }, [localStream, callUser]);
 
   const submitPost = () => {
     if (!newPost.title.trim() || !newPost.body.trim()) return;
@@ -275,7 +306,7 @@ export default function Connect() {
                 </div>
                 <div className={styles.friendActions}>
                   <button className={styles.iconBtn} title="Message" onClick={() => { setChatUser(u); }}>💬</button>
-                  <button className={styles.iconBtnGreen} title="Video Call" onClick={() => setCallUser(u)}>📹</button>
+                  <button className={styles.iconBtnGreen} title="Video Call" onClick={() => startVideoCall(u)}>📹</button>
                 </div>
               </div>
             ))}
@@ -321,7 +352,7 @@ export default function Connect() {
               </button>
               {isFriend(selectedUser.id) ? (
                 <>
-                  <button className={styles.btnVideo} onClick={() => { setCallUser(selectedUser); setSelectedUser(null); }}>
+                  <button className={styles.btnVideo} onClick={() => startVideoCall(selectedUser)}>
                     📹 Video Call
                   </button>
                   <button className={styles.btnOutline} onClick={() => removeFriend(selectedUser.id)}>
@@ -355,7 +386,7 @@ export default function Connect() {
                 {chatUser.isGroup ? '12 Members Active' : '🟢 Online'}
               </div>
             </div>
-            <button className={styles.chatCallBtn} onClick={() => { setCallUser(chatUser); setChatUser(null); }}>📹</button>
+            <button className={styles.chatCallBtn} onClick={() => startVideoCall(chatUser)}>📹</button>
           </div>
 
           {/* Messages */}
@@ -398,9 +429,12 @@ export default function Connect() {
             </div>
 
             {/* Self preview */}
-            <div className={styles.callSelfPreview}>
-              <span style={{ fontSize: '1.6rem' }}>🧑‍⚕️</span>
-              <span style={{ fontSize: '0.65rem', color: '#fff', marginTop: '2px' }}>You</span>
+            <div className={styles.callSelfPreview} style={{ background: '#000', overflow: 'hidden', padding: 0 }}>
+              {localStream ? (
+                <video ref={localVideoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <span style={{ fontSize: '1.6rem', color: '#fff', padding: '10px' }}>📹 Off</span>
+              )}
             </div>
 
             {/* Controls */}
@@ -408,7 +442,7 @@ export default function Connect() {
               <button className={styles.callCtrlBtn} title="Mute">🎤</button>
               <button className={styles.callCtrlBtn} title="Camera">📷</button>
               <button className={styles.callCtrlBtn} title="Speaker">🔊</button>
-              <button className={styles.callEndBtn} title="End Call" onClick={() => setCallUser(null)}>📵</button>
+              <button className={styles.callEndBtn} title="End Call" onClick={endVideoCall}>📵</button>
             </div>
           </div>
         </div>

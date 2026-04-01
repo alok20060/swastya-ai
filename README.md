@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🩺 SWASTYA·AI — Frontend
 
 A React (Vite) health app frontend with dark Noise-inspired UI.
@@ -151,3 +152,6 @@ Change the target to match your backend port.
 - `react` + `react-dom` — UI framework
 - `react-router-dom` — Client-side routing
 - `leaflet` + `react-leaflet` — Interactive maps
+=======
+# swastya.ai
+>>>>>>> a23485a8e1e83f02a7526cfdf4e30fa02c40cae5

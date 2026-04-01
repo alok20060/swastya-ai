@@ -6,6 +6,8 @@ export default function DiseaseSelection({ onSelectDisease }) {
         { name: "Hypertension", icon: "❤️", desc: "Share tips for healthy blood pressure management" },
         { name: "Heart Disease", icon: "🫀", desc: "Support community for heart health journeys" },
         { name: "Arthritis", icon: "🦴", desc: "Discuss joint care and pain management" },
+        { name: "Asthma", icon: "🫁", desc: "Breathing exercises and respiratory wellness" },
+        { name: "Thyroid", icon: "🦋", desc: "Thyroid health discussions and lifestyle tips" },
     ];
 
     return (

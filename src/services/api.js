@@ -127,35 +127,65 @@ const currentUser = () => users.find(u => u.token === getToken());
 
 // ── Auth API ─────────────────────────────────────────
 
+import { supabase } from './supabase';
+
 export const authAPI = {
   login: async (data) => {
-    await delay(500);
-    const user = users.find(u => u.email === data.email && u.password === data.password);
-    if (!user) throw new Error('Invalid credentials');
-    localStorage.setItem('v2_token', user.token);
-    return { token: user.token, user: { ...user, ...userProfile } };
+    let session = null;
+    let user = null;
+
+    if (data.phone) {
+      // OTP Verification flow
+      const { data: authData, error } = await supabase.auth.verifyOtp({
+        phone: data.phone,
+        token: data.otp,
+        type: 'sms'
+      });
+      if (error) throw new Error(error.message);
+      session = authData.session;
+      user = authData.user;
+    } else {
+      // Standard Email/Password Login
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password
+      });
+      if (error) throw new Error(error.message);
+      session = authData.session;
+      user = authData.user;
+    }
+    
+    localStorage.setItem('v2_token', session.access_token);
+    return { token: session.access_token, user: { ...userProfile, email: user.email, phone: user.phone, id: user.id } };
+  },
+  sendOTP: async (phone) => {
+    const { error } = await supabase.auth.signInWithOtp({ phone });
+    if (error) throw new Error(error.message);
+    return true;
   },
   signup: async (data) => {
-    await delay(600);
-    if (users.find(u => u.email === data.email)) throw new Error('Email already exists');
-    const newUser = { ...data, id: Date.now(), token: 'sc-jwt-' + Date.now() };
-    users.push(newUser);
-    setStorage('v2_users', users);
-    localStorage.setItem('v2_token', newUser.token);
+    const { data: authData, error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: { data: { name: data.name } }
+    });
+    if (error) throw new Error(error.message);
+    
+    // Save locally for fallback mock data
     userProfile = { ...userProfile, name: data.name, email: data.email };
     setStorage('v2_profile', userProfile);
-    return { token: newUser.token, user: { ...newUser, ...userProfile } };
+    
+    return { token: authData.session?.access_token || 'pending', user: { ...userProfile, email: data.email } };
   },
   logout: async () => {
-    await delay(200);
+    await supabase.auth.signOut();
     localStorage.removeItem('v2_token');
     return { success: true };
   },
   profile: async () => {
-    await delay(300);
-    const user = currentUser();
-    if (!user) throw new Error('Not authenticated');
-    return { ...user, ...userProfile };
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user && !localStorage.getItem('v2_token')) throw new Error('Not authenticated');
+    return { ...userProfile, email: user?.email };
   },
   updateProfile: async (data) => {
     await delay(400);
