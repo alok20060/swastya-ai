@@ -444,49 +444,62 @@ const CHATBOT_RESPONSES = {
 };
 
 export const chatbotAPI = {
-  sendMessage: async (message, context = {}) => {
-    await delay(800 + Math.random() * 600);
+  sendMessage: async (message, context = {}, preferredLang = 'en-US') => {
+    const name = context.name || userProfile.name || 'Patient';
+    
+    // Language names for prompt instruction
+    const langNames = {
+      'en-US': 'English',
+      'hi-IN': 'Hindi',
+      'kn-IN': 'Kannada'
+    };
+    const targetLang = langNames[preferredLang] || 'English';
 
-    const name = context.name || userProfile.name || 'Friend';
-    const hr = context.heartRate || 74;
-    const spo2 = context.spo2 || 97;
-    const steps = context.steps || 6420;
+    // Build the system prompt using context
+    const systemPrompt = `You are Swastya-AI, a highly professional, empathetic, and knowledgeable Medical AI Assistant. 
+You must respond to the patient in ${targetLang}. 
+Patient Name: ${name}. 
+Current Health Context: Heart Rate ${context.heartRate || 74} BPM, SpO2 ${context.spo2 || 97}%, Steps ${context.steps || 6420}.
+Provide safe, accurate, and professional medical advice and suggestions based on ayurvedic and modern medicine. 
+CRITICAL: Never diagnose fatal illnesses or prescribe heavy chemical drugs directly. Advise consulting a real doctor for serious issues. Keep responses concise (2-4 sentences max) for voice playback.`;
 
-    const msg = message.toLowerCase();
-    let reply = '';
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
-    if (msg.includes('vital') || msg.includes('heart') || msg.includes('health') || msg.includes('bp')) {
-      const hrStatus = hr > 100 ? 'slightly elevated — please rest' : hr < 60 ? 'a bit low — are you feeling okay?' : 'perfectly normal';
-      const spo2Status = spo2 < 95 ? 'slightly low, take deep breaths' : 'excellent';
-      const overall = hr > 100 || spo2 < 95 ? 'like you could use some rest' : 'great';
-      reply = CHATBOT_RESPONSES.vitals[0]
-        .replace('{hr}', hr).replace('{hrStatus}', hrStatus)
-        .replace('{spo2}', spo2).replace('{spo2Status}', spo2Status)
-        .replace('{steps}', steps.toLocaleString()).replace('{overall}', overall);
-    } else if (msg.includes('food') || msg.includes('eat') || msg.includes('rice') || msg.includes('dosa') || msg.includes('calorie') || msg.includes('lunch') || msg.includes('dinner')) {
-      const totalCal = foodLog.reduce((s, f) => s + (f.calories || 0), 0);
-      const foodAdvice = totalCal < 800 ? 'You haven\'t eaten much today — please have a proper meal soon.' : totalCal > 1800 ? 'You\'ve eaten well today. Maybe a light dinner would be good.' : 'Your intake looks balanced so far.';
-      reply = CHATBOT_RESPONSES.food[0].replace('{calories}', totalCal).replace('{foodAdvice}', foodAdvice);
-    } else if (msg.includes('unwell') || msg.includes('pain') || msg.includes('chest') || msg.includes('tight') || msg.includes('dizzy') || msg.includes('sick')) {
-      const unwellAdvice = hr > 100 ? `Your heart rate is elevated at ${hr} BPM. Please sit down and rest immediately.` : 'Your vitals appear stable, but please take rest and monitor how you feel.';
-      reply = CHATBOT_RESPONSES.unwell[0].replace('{name}', name).replace('{hr}', hr).replace('{spo2}', spo2).replace('{unwellAdvice}', unwellAdvice);
-    } else if (msg.includes('medicine') || msg.includes('tablet') || msg.includes('metformin') || msg.includes('order')) {
-      const taken = medications.filter(m => m.taken).length;
-      const medAdvice = taken === medications.length ? 'Great job — all medicines taken!' : `Please don't forget the remaining ${medications.length - taken} medicine(s).`;
-      reply = CHATBOT_RESPONSES.medicine[0].replace('{taken}', taken).replace('{total}', medications.length).replace('{medAdvice}', medAdvice);
-    } else {
-      const responses = [
-        `Based on your health profile, I recommend maintaining a balanced diet with your South Indian meals and continuing your daily walks.`,
-        `That's something I'd recommend discussing with Dr. Priya Sharma at your next appointment on April 5th.`,
-        `Your recovery score today is 78/100 which is good! Keep maintaining your routine.`,
-        `I notice you have a doctor's appointment coming up. Would you like me to remind you about it?`,
-      ];
-      const response = responses[Math.floor(Math.random() * responses.length)];
-      const template = CHATBOT_RESPONSES.general[Math.floor(Math.random() * CHATBOT_RESPONSES.general.length)];
-      reply = template.replace('{name}', name).replace('{response}', response);
+    if (apiKey && apiKey !== 'your_api_key_here') {
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: `System Context: ${systemPrompt}\n\nPatient Query: ${message}` }] }]
+          })
+        });
+        
+        const json = await response.json();
+        if (json.candidates && json.candidates[0]) {
+          return { reply: json.candidates[0].content.parts[0].text, timestamp: new Date().toISOString() };
+        }
+      } catch (err) {
+        console.error("NLP Model Error:", err);
+      }
     }
 
-    return { reply, timestamp: new Date().toISOString() };
+    // Fallback Mock NLP Responses (Simulating Multilingual execution if no API Key)
+    await delay(1000);
+    let mockReply = '';
+    
+    if (preferredLang === 'hi-IN') {
+      mockReply = `नमस्ते ${name} जी। मैं स्वास्थ्या एआई हूँ। आपके लक्षण और वाइटल्स देखकर मैं सलाह दूंगा कि आप आराम करें और अपने डॉक्टर से संपर्क करें।`;
+    } else if (preferredLang === 'kn-IN') {
+      mockReply = `ನಮಸ್ಕಾರ ${name} ಅವರೇ. ನಾನು ಸ್ವಾಸ್ಥ್ಯ ಎಐ. ದಯವಿಟ್ಟು ಚೆನ್ನಾಗಿ ವಿಶ್ರಾಂತಿ ಪಡೆಯಿರಿ ಮತ್ತು ನಿಮ್ಮ ವೈದ್ಯರನ್ನು ಭೇಟಿ ಮಾಡಿ.`;
+    } else {
+      mockReply = `Hello ${name}. I am your Swastya AI assistant. I recommend maintaining a balanced diet, staying hydrated, and consulting your doctor for specific persistent symptoms.`;
+    }
+    
+    // Warn developer console
+    if (!apiKey) console.warn("Swastya-AI: Gemini NLP key missing. Using mock fallback responses.");
+
+    return { reply: mockReply, timestamp: new Date().toISOString() };
   },
 };
 

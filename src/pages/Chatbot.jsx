@@ -11,6 +11,7 @@ export default function Chatbot() {
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [vitals, setVitals] = useState({})
+  const [language, setLanguage] = useState('en-US') // Multilingual NLP state
   const messagesEndRef = useRef(null)
 
   useEffect(() => {
@@ -47,8 +48,8 @@ export default function Chatbot() {
         steps: vitals.steps
       }
 
-      const res = await chatbotAPI.sendMessage(userMsg, context)
-      setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'bot', text: res.reply }])
+        const res = await chatbotAPI.sendMessage(userMsg, context, language)
+        setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'bot', text: res.reply }])
     } catch {
       setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'bot', text: "I'm having trouble connecting right now. Please try again later." }])
     } finally {
@@ -71,10 +72,15 @@ export default function Chatbot() {
         <div className={styles.botInfo}>
           <div className={styles.botAvatar}>🧠</div>
           <div>
-            <h2 className={styles.botName}>Swastya AI</h2>
-            <p className={styles.botStatus}><span className={styles.statusDot}/> Online</p>
+            <h2 className={styles.botName}>Swastya AI NLP</h2>
+            <p className={styles.botStatus}><span className={styles.statusDot}/> Professional Advice Active</p>
           </div>
         </div>
+        <select value={language} onChange={(e) => setLanguage(e.target.value)} style={{ padding: '8px', borderRadius: '8px', border: '1px solid #ccc', outline: 'none' }}>
+          <option value="en-US">English</option>
+          <option value="hi-IN">Hindi</option>
+          <option value="kn-IN">Kannada</option>
+        </select>
       </div>
 
       {/* System Prompt Info (For Hackathon Demo) */}

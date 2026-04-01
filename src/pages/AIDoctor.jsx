@@ -8,6 +8,7 @@ export default function AIDoctor() {
   const [transcript, setTranscript] = useState('');
   const [response, setResponse] = useState('');
   const [cameraActive, setCameraActive] = useState(false);
+  const [language, setLanguage] = useState('en-US'); // en-US, hi-IN, kn-IN
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   
@@ -19,6 +20,7 @@ export default function AIDoctor() {
     if (recognition) {
       recognition.continuous = false;
       recognition.interimResults = false;
+      recognition.lang = language;
       recognition.onresult = async (event) => {
         const text = event.results[0][0].transcript;
         setTranscript(text);
@@ -80,10 +82,11 @@ export default function AIDoctor() {
   const handleUserMessage = async (msg) => {
     setIsSpeaking(true);
     setResponse("Thinking...");
-    const { reply } = await chatbotAPI.sendMessage(msg);
+    const { reply } = await chatbotAPI.sendMessage(msg, {}, language);
     setResponse(reply);
     
     const utterance = new SpeechSynthesisUtterance(reply);
+    utterance.lang = language;
     utterance.pitch = 1;
     utterance.rate = 1;
     utterance.onend = () => setIsSpeaking(false);
@@ -126,6 +129,17 @@ export default function AIDoctor() {
 
         <div className={styles.interaction}>
           <div className={styles.chatBox}>
+            <div style={{ paddingBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <select className={styles.langSelect} value={language} onChange={(e) => {
+                  setLanguage(e.target.value);
+                  if (recognition) recognition.lang = e.target.value;
+                }}>
+                <option value="en-US">English</option>
+                <option value="hi-IN">Hindi</option>
+                <option value="kn-IN">Kannada</option>
+              </select>
+            </div>
+            
             <div className={styles.messageRow}>
               <strong>You: </strong> {transcript || "..."}
             </div>
