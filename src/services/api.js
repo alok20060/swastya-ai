@@ -156,7 +156,11 @@ export const authAPI = {
     }
     
     localStorage.setItem('v2_token', session.access_token);
-    return { token: session.access_token, user: { ...userProfile, email: user.email, phone: user.phone, id: user.id } };
+    // Use Supabase metadata as the source of truth for onboarding state
+    userProfile = { ...userProfile, ...user.user_metadata, email: user.email, phone: user.phone, id: user.id };
+    setStorage('v2_profile', userProfile);
+    
+    return { token: session.access_token, user: userProfile };
   },
   sendOTP: async (phone) => {
     const { error } = await supabase.auth.signInWithOtp({ phone });
@@ -167,19 +171,27 @@ export const authAPI = {
     const { data: authData, error } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
-      options: { data: { name: data.name } }
+      options: { data: { name: data.name, onboardingComplete: false } }
     });
     if (error) throw new Error(error.message);
     
-    // Save locally for fallback mock data
-    userProfile = { ...userProfile, name: data.name, email: data.email };
+    userProfile = { ...userProfile, name: data.name, email: data.email, onboardingComplete: false };
     setStorage('v2_profile', userProfile);
     
-    return { token: authData.session?.access_token || 'pending', user: { ...userProfile, email: data.email } };
+    return { token: authData.session?.access_token || 'pending', user: userProfile };
   },
   logout: async () => {
     await supabase.auth.signOut();
     localStorage.removeItem('v2_token');
+    localStorage.removeItem('v2_profile');
+    
+    // Reset local profile for the next user login
+    userProfile = {
+      name: 'New User', age: null, gender: '-', blood: '-', height: null, weight: null,
+      language: 'English', conditions: [], familyHistory: [], allergies: [], doctor: '-',
+      hospital: '-', insurance: '-', region: 'South Indian', onboardingComplete: false
+    };
+    
     return { success: true };
   },
   profile: async () => {
@@ -516,6 +528,11 @@ export const onboardingAPI = {
       userProfile.weight = data.personalInfo.weight;
     }
     setStorage('v2_profile', userProfile);
+
+    // Save onboarding completion flag to Supabase user_metadata
+    await supabase.auth.updateUser({
+      data: { onboardingComplete: true }
+    });
 
     // Also update the users array if this user exists
     let token = localStorage.getItem('v2_token');
