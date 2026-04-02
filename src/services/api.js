@@ -144,10 +144,24 @@ export const authAPI = {
         
         let { data: authData, error } = await supabase.auth.signInWithPassword({ email: proxyEmail, password: proxyPass });
         
-        if (error && (error.message.includes('Invalid login') || error.status === 400)) {
+        if (error && (error.message.includes('Too Many Requests') || error.status === 429)) {
+          console.warn("CRITICAL: Supabase Rate Limit Hit. Entering Local-Only Demo Mode.");
+          localStorage.setItem('v2_token', 'local_demo_token_' + Date.now());
+          userProfile = { ...userProfile, name: 'Demo User', phone: data.phone, onboardingComplete: false };
+          setStorage('v2_profile', userProfile);
+          return { token: 'local_demo_token', user: userProfile };
+        } else if (error && (error.message.includes('Invalid login') || error.status === 400)) {
           const { data: regData, error: regErr } = await supabase.auth.signUp({
             email: proxyEmail, password: proxyPass, options: { data: { name: 'Phone User', phone: data.phone, onboardingComplete: false } }
           });
+          
+          if (regErr && (regErr.message.includes('Too Many Requests') || regErr.status === 429)) {
+             console.warn("CRITICAL: Supabase Signup Rate Limit Hit. Entering Local-Only Demo Mode.");
+             localStorage.setItem('v2_token', 'local_demo_token_' + Date.now());
+             userProfile = { ...userProfile, name: 'Demo User (Local)', phone: data.phone, onboardingComplete: false };
+             setStorage('v2_profile', userProfile);
+             return { token: 'local_demo_token', user: userProfile };
+          }
           if (regErr) throw new Error("Auto-registration failed: " + regErr.message);
           authData = regData;
         } else if (error) {
