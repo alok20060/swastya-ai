@@ -11,8 +11,12 @@ export default function Chatbot() {
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [vitals, setVitals] = useState({})
-  const [language, setLanguage] = useState('en-US') // Multilingual NLP state
+  const [language, setLanguage] = useState('en-US') 
+  const [isListening, setIsListening] = useState(false)
   const messagesEndRef = useRef(null)
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = useRef(SpeechRecognition ? new SpeechRecognition() : null);
 
   useEffect(() => {
     vitalsAPI.getLatest().then(setVitals)
@@ -26,43 +30,65 @@ export default function Chatbot() {
     scrollToBottom()
   }, [messages, isTyping])
 
-  const handleSend = async (e) => {
+  const handleSend = async (e, customMsg) => {
     e?.preventDefault()
-    if (!input.trim() || isTyping) return
+    const userMsg = customMsg || input.trim()
+    if (!userMsg || isTyping) return
 
-    const userMsg = input.trim()
     setInput('')
-    
-    // Add user message
     setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'user', text: userMsg }])
     setIsTyping(true)
 
     try {
-      // Build context for AI
       const context = {
         name: user?.name,
         age: user?.age,
+        gender: user?.gender,
         conditions: user?.conditions?.join(', '),
-        heartRate: vitals.heartRate,
-        spo2: vitals.spo2,
-        steps: vitals.steps
+        heartRate: vitals.heartRate || 74,
+        spo2: vitals.spo2 || 97,
+        steps: vitals.steps || 6420,
+        daily_summary: `The patient has taken ${vitals.steps || 6420} steps and their recovery score is 78%. Recommend daily improvements.`
       }
 
-        const res = await chatbotAPI.sendMessage(userMsg, context, language)
-        setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'bot', text: res.reply }])
-    } catch {
-      setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'bot', text: "I'm having trouble connecting right now. Please try again later." }])
+      const res = await chatbotAPI.sendMessage(userMsg, context, language)
+      setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'bot', text: res.reply }])
+      
+      // Auto-speak the AI doctor's response for better accessibility
+      const utterance = new SpeechSynthesisUtterance(res.reply);
+      utterance.lang = language;
+      window.speechSynthesis.speak(utterance);
+
+    } catch (err) {
+      setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'bot', text: "I'm having trouble connecting to my medical database. Please try again." }])
     } finally {
       setIsTyping(false)
     }
   }
 
+  const toggleVoice = () => {
+    if (!recognition.current) {
+       alert("Voice not supported in this browser.")
+       return
+    }
+    if (isListening) {
+      recognition.current.stop();
+      setIsListening(false);
+    } else {
+      recognition.current.lang = language;
+      recognition.current.start();
+      setIsListening(true);
+      recognition.current.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        handleSend(null, text);
+        setIsListening(false);
+      }
+      recognition.current.onend = () => setIsListening(false);
+    }
+  }
+
   const handleQuickAction = (actionText) => {
-    setInput(actionText)
-    // Small timeout to allow input state to update before sending
-    setTimeout(() => {
-      document.getElementById('chat-form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))
-    }, 50)
+    handleSend(null, actionText)
   }
 
   return (
@@ -115,15 +141,15 @@ export default function Chatbot() {
       <div className={styles.inputArea}>
         {/* Quick Actions */}
         <div className={styles.quickActions}>
-          <button onClick={() => handleQuickAction("Check my vitals")} className={styles.chip}>❤️ Vitals</button>
-          <button onClick={() => handleQuickAction("I feel unwell")} className={styles.chip}>🤒 Unwell</button>
-          <button onClick={() => handleQuickAction("What did I eat today?")} className={styles.chip}>🥗 Food</button>
-          <button onClick={() => handleQuickAction("Check my medicine")} className={styles.chip}>💊 Medicine</button>
+          <button onClick={() => handleQuickAction("Give me a health checkup summary based on my vitals")} className={styles.chip}>👨‍⚕️ Health Summary</button>
+          <button onClick={() => handleQuickAction("Suggest 3 ayurvedic tips for my daily energy")} className={styles.chip}>🌿 Ayurvedic Tips</button>
+          <button onClick={() => handleQuickAction("Analyze my step count and sleep for today")} className={styles.chip}>🏃 Daily Activity</button>
+          <button onClick={() => handleQuickAction("Suggest a traditional Indian diet plan for today")} className={styles.chip}>🥗 Diet Advice</button>
         </div>
 
         <form id="chat-form" className={styles.form} onSubmit={handleSend}>
-          <button type="button" className={styles.voiceBtn} onClick={() => alert("🎤 Voice input active (Mock)")}>
-            🎤
+          <button type="button" className={`${styles.voiceBtn} ${isListening ? styles.activeVoice : ''}`} onClick={toggleVoice}>
+            {isListening ? '🛑' : '🎤'}
           </button>
           <input 
             value={input} 

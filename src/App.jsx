@@ -16,7 +16,6 @@ import Medications from './pages/Medications';
 import GPSTracker from './pages/GPSTracker';
 import Profile from './pages/Profile';
 import Connect from './pages/Connect';
-import AIDoctor from './pages/AIDoctor';
 
 // Onboarding imports
 import OnboardingLayout from './components/OnboardingLayout';
@@ -78,7 +77,6 @@ export default function App() {
                 <Route path="gps" element={<GPSTracker />} />
                 <Route path="profile" element={<Profile />} />
                 <Route path="connect" element={<Connect />} />
-                <Route path="aidoctor" element={<AIDoctor />} />
                 <Route path="tree" element={<Navigate to="/reminders" replace />} />
               </Route>
             </Routes>

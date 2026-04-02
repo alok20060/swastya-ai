@@ -110,9 +110,25 @@
   background: var(--primary-soft);
   color: var(--primary);
   display: flex; justify-content: center; align-items: center;
-  border-radius: 50%;
-  font-size: 1rem;
-  flex-shrink: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activeVoice {
+  background: #fecaca;
+  color: #ef4444;
+  border-color: #ef4444;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 .msgBubble {

@@ -6,7 +6,7 @@ const navItems = [
   { to: '/', icon: '🏠', label: 'Home' },
   { to: '/health', icon: '❤️', label: 'Health' },
   { to: '/reminders', icon: '📅', label: 'Tasks' },
-  { to: '/aidoctor', icon: '🧑‍⚕️', label: 'Doctor' },
+  { to: '/chat', icon: '💬', label: 'Assistant' },
   { to: '/connect', icon: '🤝', label: 'Connect' },
 ]
 
